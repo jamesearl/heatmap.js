@@ -345,6 +345,7 @@
                 me.set("width", config.width || 0);
                 me.set("height", config.height || 0);
                 me.set("debug", config.debug);
+                me.set('colorizeImageData', (config.colorizeImageData || me.colorizeImageData).bind(me));
 
                 if(config.legend){
                     var legendCfg = config.legend;
@@ -452,6 +453,41 @@
 
             return height;
         },
+
+        colorizeImageData: function(imageData, palette, opacity, premultiplyAlpha){
+            length = imageData.length;
+            // loop thru the area
+            for(var i=3; i < length; i+=4){
+
+                // [0] -> r, [1] -> g, [2] -> b, [3] -> alpha
+                alpha = imageData[i],
+                offset = alpha*4;
+
+                if(!offset)
+                    continue;
+
+                // we ve started with i=3
+                // set the new r, g and b values
+                finalAlpha = (alpha < opacity)?alpha:opacity;
+                imageData[i-3]=palette[offset];
+                imageData[i-2]=palette[offset+1];
+                imageData[i-1]=palette[offset+2];
+                
+                if (premultiplyAlpha) {
+                    // To fix browsers that premultiply incorrectly, we'll pass in a value scaled
+                    // appropriately so when the multiplication happens the correct value will result.
+                    imageData[i-3] /= 255/finalAlpha;
+                    imageData[i-2] /= 255/finalAlpha;
+                    imageData[i-1] /= 255/finalAlpha;
+                }
+                
+                // we want the heatmap to have a gradient from transparent to the colors
+                // as long as alpha is lower than the defined opacity (maximum), we'll use the alpha value
+                imageData[i] = finalAlpha;
+            }
+            return imageData;
+        },
+
         colorize: function(x, y){
                 // get the private variables
                 var me = this,
@@ -511,39 +547,9 @@
 
                 image = actx.getImageData(left, top, right-left, bottom-top);
                 imageData = image.data;
-                length = imageData.length;
-                // loop thru the area
-                for(var i=3; i < length; i+=4){
 
-                    // [0] -> r, [1] -> g, [2] -> b, [3] -> alpha
-                    alpha = imageData[i],
-                    offset = alpha*4;
+                image.data = me.get('colorizeImageData')(image.data, palette, opacity, premultiplyAlpha);
 
-                    if(!offset)
-                        continue;
-
-                    // we ve started with i=3
-                    // set the new r, g and b values
-                    finalAlpha = (alpha < opacity)?alpha:opacity;
-                    imageData[i-3]=palette[offset];
-                    imageData[i-2]=palette[offset+1];
-                    imageData[i-1]=palette[offset+2];
-                    
-                    if (premultiplyAlpha) {
-                    	// To fix browsers that premultiply incorrectly, we'll pass in a value scaled
-                    	// appropriately so when the multiplication happens the correct value will result.
-                    	imageData[i-3] /= 255/finalAlpha;
-                    	imageData[i-2] /= 255/finalAlpha;
-                    	imageData[i-1] /= 255/finalAlpha;
-                    }
-                    
-                    // we want the heatmap to have a gradient from transparent to the colors
-                    // as long as alpha is lower than the defined opacity (maximum), we'll use the alpha value
-                    imageData[i] = finalAlpha;
-                }
-                // the rgb data manipulation didn't affect the ImageData object(defined on the top)
-                // after the manipulation process we have to set the manipulated data to the ImageData object
-                image.data = imageData;
                 ctx.putImageData(image, left, top);
         },
         drawAlpha: function(x, y, count, colorize){
