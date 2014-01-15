@@ -454,7 +454,7 @@
             return height;
         },
 
-        colorizeImageData: function(imageData, palette, opacity, premultiplyAlpha){
+        colorizeImageData: function(imageData, palette, opacity, premultiplyAlpha, callback){
             length = imageData.length;
             // loop thru the area
             for(var i=3; i < length; i+=4){
@@ -485,7 +485,11 @@
                 // as long as alpha is lower than the defined opacity (maximum), we'll use the alpha value
                 imageData[i] = finalAlpha;
             }
-            return imageData;
+            if(callback){
+                callback(imageData);
+            } else {
+                return imageData;
+            }
         },
 
         colorize: function(x, y){
@@ -546,11 +550,10 @@
                 }
 
                 image = actx.getImageData(left, top, right-left, bottom-top);
-                imageData = image.data;
-
-                image.data = me.get('colorizeImageData')(image.data, palette, opacity, premultiplyAlpha);
-
-                ctx.putImageData(image, left, top);
+                me.get('colorizeImageData')(image.data, palette, opacity, premultiplyAlpha, function(imageData){
+                    image.data = imageData;
+                    ctx.putImageData(image, left, top);    
+                });
         },
         drawAlpha: function(x, y, count, colorize){
                 // storing the variables because they will be often used
