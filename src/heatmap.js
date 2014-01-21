@@ -549,12 +549,17 @@
                     }    
                 }
 
+                left = Math.round(left);
+                right = Math.round(right);
+                top = Math.round(top);
+                bottom = Math.round(bottom);
                 var w = right - left;
                 var h = bottom - top;
-                me.get('colorizeImageData')(actx.getImageData(left, top, w, h).data, palette, opacity, premultiplyAlpha, function(imageData){
-                    var ctxImageData = ctx.createImageData(w, h);
-                    ctxImageData.data = imageData;
-                    ctx.putImageData(ctxImageData, left, top);
+                var imageData = actx.getImageData(left, top, w, h);
+                me.get('colorizeImageData')(imageData.data, palette, opacity, premultiplyAlpha, function(coloredData){
+                    var sprite = actx.createImageData(imageData);
+                    sprite.data.set(coloredData);
+                    ctx.putImageData(sprite, left, top);
                 });
         },
         drawAlpha: function(x, y, count, colorize){
