@@ -549,10 +549,12 @@
                     }    
                 }
 
-                image = actx.getImageData(left, top, right-left, bottom-top);
-                me.get('colorizeImageData')(image.data, palette, opacity, premultiplyAlpha, function(imageData){
-                    image.data = imageData;
-                    ctx.putImageData(image, left, top);    
+                var w = right - left;
+                var h = bottom - top;
+                me.get('colorizeImageData')(actx.getImageData(left, top, w, h).data, palette, opacity, premultiplyAlpha, function(imageData){
+                    var ctxImageData = ctx.createImageData(w, h);
+                    ctxImageData.data = imageData;
+                    ctx.putImageData(ctxImageData, left, top);
                 });
         },
         drawAlpha: function(x, y, count, colorize){
