@@ -346,6 +346,7 @@
                 me.set("height", config.height || 0);
                 me.set("debug", config.debug);
                 me.set('colorizeImageData', (config.colorizeImageData || me.colorizeImageData).bind(me));
+                me.set('drawHeatpath', (config.drawHeatpath || me.drawHeatpath).bind(me));
 
                 if(config.legend){
                     var legendCfg = config.legend;
@@ -562,6 +563,12 @@
                     ctx.putImageData(sprite, left, top);
                 });
         },
+
+        drawHeatpath: function(ctx, x, y, radius){
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2, true);
+            ctx.closePath();
+        },
         drawAlpha: function(x, y, count, colorize){
                 // storing the variables because they will be often used
                 var me = this,
@@ -578,9 +585,12 @@
                 ctx.shadowOffsetY = 15000; 
                 ctx.shadowBlur = 15; 
 
-                ctx.beginPath();
-                ctx.arc(x - 15000, y - 15000, radius, 0, Math.PI * 2, true);
-                ctx.closePath();
+                me.get("drawHeatpath")(ctx, x - 15000, y - 15000, radius);
+
+                // ctx.beginPath();
+                // ctx.arc(x - 15000, y - 15000, radius, 0, Math.PI * 2, true);
+                // ctx.closePath();
+
                 ctx.fill();
                 if(colorize){
                     // finally colorize the area
