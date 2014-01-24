@@ -91,7 +91,7 @@
             }else{
                 while(dlen--){
                     var point = d[dlen];
-                    heatmap.drawAlpha(point.x, point.y, point.count, false);
+                    // heatmap.drawAlpha(point.x, point.y, point.count, false);
                     if(!data[point.x])
                         data[point.x] = [];
 
@@ -100,6 +100,7 @@
 
                     data[point.x][point.y] = point.count;
                 }
+                heatmap.drawAlphas(data);
             }
             heatmap.colorize();
             this.set("data", d);
@@ -565,9 +566,56 @@
         },
 
         drawHeatpath: function(ctx, x, y, radius){
-            ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2, true);
-            ctx.closePath();
+        },
+        drawAlphas: function(data){
+            var me = this,
+                radius = me.get("radius"),
+                ctx = me.get("actx"),
+                max = me.get("max"),
+                bounds = me.get("bounds"),
+                count
+                ;
+
+            ctx.shadowOffsetX = 15000; 
+            ctx.shadowOffsetY = 15000; 
+            ctx.shadowBlur = 15; 
+
+            /// LOOP
+            for(var x in data){
+                ctx.beginPath();
+                
+                if(x === undefined)
+                    continue;
+                for(var y in data[x]){
+                    if(y === undefined)
+                        continue;
+                    count = data[x][y];
+                    ctx.shadowColor = ('rgba(0,0,0,'+((count)?(count/me.store.max):'0.1')+')');
+                    xb = x - (1.5 * radius) >> 0;
+                    yb = y - (1.5 * radius) >> 0;
+                    xc = x + (1.5 * radius) >> 0;
+                    yc = y + (1.5 * radius) >> 0;
+                    ctx.moveTo(x, y);
+                    me.get("drawHeatpath")(ctx, x - 15000, y - 15000, radius);
+
+                    if(xb < bounds["l"]){
+                        bounds["l"] = xb;
+                    }
+                    if(yb < bounds["t"]){
+                        bounds["t"] = yb;
+                    }
+                    if(xc > bounds['r']){
+                        bounds['r'] = xc;
+                    }
+                    if(yc > bounds['b']){
+                        bounds['b'] = yc;
+                    }
+                }
+
+                ctx.closePath();
+                ctx.fill();
+            }
         },
         drawAlpha: function(x, y, count, colorize){
                 // storing the variables because they will be often used
@@ -581,11 +629,11 @@
 
                 ctx.shadowColor = ('rgba(0,0,0,'+((count)?(count/me.store.max):'0.1')+')');
 
-                ctx.shadowOffsetX = 15000; 
-                ctx.shadowOffsetY = 15000; 
-                ctx.shadowBlur = 15; 
+                
 
+                ctx.beginPath();
                 me.get("drawHeatpath")(ctx, x - 15000, y - 15000, radius);
+                ctx.closePath();
 
                 // ctx.beginPath();
                 // ctx.arc(x - 15000, y - 15000, radius, 0, Math.PI * 2, true);
