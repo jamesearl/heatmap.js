@@ -1,3 +1,38 @@
+# Fork notes
+
+This fork contains some performance tweaks for large datasets (100k+ points). It does not match upstream's full featureset. Below are some notes on the differences.
+
+## Changes
+
+- `addDataPoint()` removed. Redraw is too expensive on big datasets, these heatmaps should be treated as immutable.
+
+- `setDataSet()` stores data y,x to reduce the iterations in the `drawAlphas()` loop. The assumption is that sites are taller than they are wide.
+
+- `drawAlphas()` operates against the entire dataset. It does not draw individual paths for each point anymore. Instead it draws one path per iterated row.
+  This does change the look of the resulting heatmap *slighly*.
+
+- `colorize()` has been split into an outer (still called `colorize()`) and inner `colorizeImageData()` function. The inner is injectable, to allow the actual coloring logic to be handled externally. 
+  In my own implementation, it's done by a webworker.
+
+- new config option `colorizeImageData()`, with default setting to match upstream's drawing function. Signature follows:
+  ```javascript
+    config.colorizeImageData = function(imageData, palette, opacity, premultiplyAlpha, callback){};
+  ```
+
+  `callback` signature:
+  ```javascript
+    function(modifiedImageData){};
+  ```
+
+- `drawAlphas()` has been split into an outer (still called `drawAlphas()`) and inner `drawHeatpath()` function. The inner is injectable, to allow the shape
+  of each heatpoint to be dictated externally.
+
+- Some additional debug is output regarding timings.
+
+
+Upstream's readme is replicated below:
+
+
 # heatmap.js
 heatmap.js is a JavaScript library that can be used to generate web heatmaps with the html5canvas element based on your data.
 
