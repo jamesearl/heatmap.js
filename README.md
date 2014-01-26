@@ -4,11 +4,11 @@ This fork contains some performance tweaks for large datasets (100k+ points). It
 
 ## Changes
 
-- `addDataPoint()` removed. Redraw is too expensive on big datasets, these heatmaps should be treated as immutable.
+- `addDataPoint()` removed. Redraw is too expensive on big datasets, heatmaps should be considered immutable.
 
-- `setDataSet()` stores data y,x to reduce the iterations in the `drawAlphas()` loop. The assumption is that sites are taller than they are wide.
+- `setDataSet()` stores data y,x to reduce the iterations in the `drawAlpha()` loop. The assumption is that sites are taller than they are wide.
 
-- `drawAlphas()` operates against the entire dataset. It does not draw individual paths for each point anymore. Instead it draws one path per iterated row.
+- `drawAlpha()` operates against the entire dataset. It does not draw individual paths for each point anymore. Instead it draws one path per iterated row.
   This does change the look of the resulting heatmap *slighly*.
 
 - `colorize()` has been split into an outer (still called `colorize()`) and inner `colorizeImageData()` function. The inner is injectable, to allow the actual coloring logic to be handled externally. 
@@ -24,7 +24,7 @@ This fork contains some performance tweaks for large datasets (100k+ points). It
     function(modifiedImageData){};
   ```
 
-- `drawAlphas()` has been split into an outer (still called `drawAlphas()`) and inner `drawHeatpath()` function. The inner is injectable, to allow the shape
+- `drawAlpha()` has been split into an outer (still called `drawAlpha()`) and inner `drawHeatpath()` function. The inner is injectable, to allow the shape
   of each heatpoint to be dictated externally.
 
 - new config option `config.drawHeatpath`, with default setting to match upstream's drawing logic.
