@@ -49,7 +49,6 @@
             
             while(dlen--){
                 var point = d[dlen];
-                // heatmap.drawAlpha(point.x, point.y, point.count, false);
                 if(!data[point.y])
                     data[point.y] = [];
 
@@ -58,7 +57,7 @@
 
                 data[point.y][point.x] = point.count;
             }
-            heatmap.drawAlphas(data);
+            heatmap.drawAlpha(data);
             heatmap.colorize();
             this.set("data", d);
         },
@@ -525,7 +524,7 @@
         drawHeatpath: function(ctx, x, y, radius){
             ctx.arc(x, y, radius, 0, Math.PI * 2, true);
         },
-        drawAlphas: function(data){
+        drawAlpha: function(data){
             var me = this,
                 radius = me.get("radius"),
                 ctx = me.get("actx"),
@@ -580,50 +579,8 @@
             }
 
             if(debug){ // emit timing data
-                console.debug("heatmap#drawAlphas " + (+new Date() - start) + 'millis');
+                console.debug("heatmap#drawAlpha " + (+new Date() - start) + 'millis');
             }
-        },
-        drawAlpha: function(x, y, count, colorize){
-                // storing the variables because they will be often used
-                var me = this,
-                    radius = me.get("radius"),
-                    ctx = me.get("actx"),
-                    max = me.get("max"),
-                    bounds = me.get("bounds"),
-                    xb = x - (1.5 * radius) >> 0, yb = y - (1.5 * radius) >> 0,
-                    xc = x + (1.5 * radius) >> 0, yc = y + (1.5 * radius) >> 0;
-
-                ctx.shadowColor = ('rgba(0,0,0,'+((count)?(count/me.store.max):'0.1')+')');
-
-                
-
-                ctx.beginPath();
-                me.get("drawHeatpath")(ctx, x - 15000, y - 15000, radius);
-                ctx.closePath();
-
-                // ctx.beginPath();
-                // ctx.arc(x - 15000, y - 15000, radius, 0, Math.PI * 2, true);
-                // ctx.closePath();
-
-                ctx.fill();
-                if(colorize){
-                    // finally colorize the area
-                    me.colorize(xb,yb);
-                }else{
-                    // or update the boundaries for the area that then should be colorized
-                    if(xb < bounds["l"]){
-                        bounds["l"] = xb;
-                    }
-                    if(yb < bounds["t"]){
-                        bounds["t"] = yb;
-                    }
-                    if(xc > bounds['r']){
-                        bounds['r'] = xc;
-                    }
-                    if(yc > bounds['b']){
-                        bounds['b'] = yc;
-                    }
-                }
         },
         toggleDisplay: function(){
                 var me = this,
