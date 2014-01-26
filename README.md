@@ -1,6 +1,6 @@
 # Fork notes
 
-This fork contains some performance tweaks for large datasets (100k+ points). It does not match upstream's full featureset. Below are some notes on the differences.
+This fork contains some performance tweaks for large datasets (100k+ points). It does not match upstream's full featureset.
 
 ## Changes
 
@@ -12,9 +12,9 @@ This fork contains some performance tweaks for large datasets (100k+ points). It
   This does change the look of the resulting heatmap *slighly*.
 
 - `colorize()` has been split into an outer (still called `colorize()`) and inner `colorizeImageData()` function. The inner is injectable, to allow the actual coloring logic to be handled externally. 
-  In my own implementation, it's done by a webworker.
+  In my own use, it's handled by a webworker.
 
-- new config option `colorizeImageData()`, with default setting to match upstream's drawing function. Signature follows:
+- new config option `config.colorizeImageData`, with default setting to match upstream's drawing logic.
   ```javascript
     config.colorizeImageData = function(imageData, palette, opacity, premultiplyAlpha, callback){};
   ```
@@ -26,6 +26,12 @@ This fork contains some performance tweaks for large datasets (100k+ points). It
 
 - `drawAlphas()` has been split into an outer (still called `drawAlphas()`) and inner `drawHeatpath()` function. The inner is injectable, to allow the shape
   of each heatpoint to be dictated externally.
+
+- new config option `config.drawHeatpath`, with default setting to match upstream's drawing logic.
+  ```javascript
+    config.drawHeatpath = function(ctx, x, y, radius){};
+  ```
+  No call to `ctx.beginPath()` or `ctx.closePath()` should be made, they're handled by the caller, and you will incur performance penalties if you ignore this. Be sure to use `moveTo()`.
 
 - Some additional debug is output regarding timings.
 
