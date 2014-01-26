@@ -6,7 +6,7 @@ This fork contains some performance tweaks for large datasets (100k+ points). It
 
 - `addDataPoint()` removed. Redraw is too expensive on big datasets, heatmaps should be considered immutable.
 
-- `setDataSet()` stores data y,x to reduce the iterations in the `drawAlpha()` loop. The assumption is that sites are taller than they are wide.
+- `setDataSet()` stores data y,x to reduce the iterations in the `drawAlpha()` loop. In all of my use cases, the resulting map is taller than it is wide.
 
 - `drawAlpha()` operates against the entire dataset. It does not draw individual paths for each point anymore. Instead it draws one path per iterated row.
   This does change the look of the resulting heatmap *slighly*.
