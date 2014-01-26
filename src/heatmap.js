@@ -50,13 +50,13 @@
             while(dlen--){
                 var point = d[dlen];
                 // heatmap.drawAlpha(point.x, point.y, point.count, false);
-                if(!data[point.x])
-                    data[point.x] = [];
+                if(!data[point.y])
+                    data[point.y] = [];
 
-                if(!data[point.x][point.y])
-                    data[point.x][point.y] = 0;
+                if(!data[point.y][point.x])
+                    data[point.y][point.x] = 0;
 
-                data[point.x][point.y] = point.count;
+                data[point.y][point.x] = point.count;
             }
             heatmap.drawAlphas(data);
             heatmap.colorize();
@@ -75,7 +75,7 @@
                     if(two === undefined)
                         continue;
                     // if both indexes are defined, push the values into the array
-                    exportData.push({x: parseInt(one, 10), y: parseInt(two, 10), count: data[one][two]});
+                    exportData.push({x: parseInt(two, 10), y: parseInt(one, 10), count: data[one][two]});
                 }
             }
 
@@ -539,15 +539,15 @@
             ctx.shadowBlur = 15; 
 
             /// LOOP
-            for(var x in data){
+            for(var y in data){
                 ctx.beginPath();
                 
-                if(x === undefined)
+                if(y === undefined)
                     continue;
-                for(var y in data[x]){
-                    if(y === undefined)
+                for(var x in data[y]){
+                    if(x === undefined)
                         continue;
-                    count = data[x][y];
+                    count = data[y][x];
                     ctx.shadowColor = ('rgba(0,0,0,'+((count)?(count/me.store.max):'0.1')+')');
                     xb = x - (1.5 * radius) >> 0;
                     yb = y - (1.5 * radius) >> 0;
