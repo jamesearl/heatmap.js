@@ -531,8 +531,13 @@
                 ctx = me.get("actx"),
                 max = me.get("max"),
                 bounds = me.get("bounds"),
-                count
+                debug = me.get("debug"),
+                count, start
                 ;
+
+            if(debug){ // emit timing data
+                start = +new Date();
+            }
 
             ctx.shadowOffsetX = 15000; 
             ctx.shadowOffsetY = 15000; 
@@ -572,6 +577,10 @@
 
                 ctx.closePath();
                 ctx.fill();
+            }
+
+            if(debug){ // emit timing data
+                console.debug("heatmap#drawAlphas " + (+new Date() - start) + 'millis');
             }
         },
         drawAlpha: function(x, y, count, colorize){
