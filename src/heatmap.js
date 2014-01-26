@@ -35,35 +35,6 @@
     }
 
     store.prototype = {
-        // function for adding datapoints to the store
-        // datapoints are usually defined by x and y but could also contain a third parameter which represents the occurrence
-        addDataPoint: function(x, y){
-            if(x < 0 || y < 0)
-                return;
-
-            var me = this,
-                heatmap = me.get("heatmap"),
-                data = me.get("data");
-
-            if(!data[x])
-                data[x] = [];
-
-            if(!data[x][y])
-                data[x][y] = 0;
-
-            // if count parameter is set increment by count otherwise by 1
-            data[x][y]+=(arguments.length<3)?1:arguments[2];
-            
-            me.set("data", data);
-            // do we have a new maximum?
-            if(me.max < data[x][y]){
-                // max changed, we need to redraw all existing(lower) datapoints
-                heatmap.get("actx").clearRect(0,0,heatmap.get("width"),heatmap.get("height"));
-                me.setDataSet({ max: data[x][y], data: data }, true);
-                return;
-            }
-            heatmap.drawAlpha(x, y, data[x][y], true);
-        },
         setDataSet: function(obj, internal){
             var me = this,
                 heatmap = me.get("heatmap"),
@@ -76,32 +47,18 @@
             // if a legend is set, update it
             heatmap.get("legend") && heatmap.get("legend").update(obj.max);
             
-            if(internal != null && internal){
-                for(var one in d){
-                    // jump over undefined indexes
-                    if(one === undefined)
-                        continue;
-                    for(var two in d[one]){
-                        if(two === undefined)
-                            continue;
-                        // if both indexes are defined, push the values into the array
-                        heatmap.drawAlpha(one, two, d[one][two], false);   
-                    }
-                }
-            }else{
-                while(dlen--){
-                    var point = d[dlen];
-                    // heatmap.drawAlpha(point.x, point.y, point.count, false);
-                    if(!data[point.x])
-                        data[point.x] = [];
+            while(dlen--){
+                var point = d[dlen];
+                // heatmap.drawAlpha(point.x, point.y, point.count, false);
+                if(!data[point.x])
+                    data[point.x] = [];
 
-                    if(!data[point.x][point.y])
-                        data[point.x][point.y] = 0;
+                if(!data[point.x][point.y])
+                    data[point.x][point.y] = 0;
 
-                    data[point.x][point.y] = point.count;
-                }
-                heatmap.drawAlphas(data);
+                data[point.x][point.y] = point.count;
             }
+            heatmap.drawAlphas(data);
             heatmap.colorize();
             this.set("data", d);
         },
