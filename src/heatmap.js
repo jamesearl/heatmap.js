@@ -450,7 +450,7 @@
             }
         },
 
-        colorize: function(x, y){
+        colorize: function(){
                 // get the private variables
                 var me = this,
                     width = me.get("width"),
@@ -466,46 +466,26 @@
                     left, top, bottom, right, 
                     image, imageData, length, alpha, offset, finalAlpha;
                 
-                if(x != null && y != null){
-                    if(x+x2>width){
-                        x=width-x2;
-                    }
-                    if(x<0){
-                        x=0;
-                    }
-                    if(y<0){
-                        y=0;
-                    }
-                    if(y+x2>height){
-                        y=height-x2;
-                    }
-                    left = x;
-                    top = y;
-                    right = x + x2;
-                    bottom = y + x2;
-
+                if(bounds['l'] < 0){
+                    left = 0;
                 }else{
-                    if(bounds['l'] < 0){
-                        left = 0;
-                    }else{
-                        left = bounds['l'];
-                    }
-                    if(bounds['r'] > width){
-                        right = width;
-                    }else{
-                        right = bounds['r'];
-                    }
-                    if(bounds['t'] < 0){
-                        top = 0;
-                    }else{
-                        top = bounds['t'];
-                    }
-                    if(bounds['b'] > height){
-                        bottom = height;
-                    }else{
-                        bottom = bounds['b'];
-                    }    
+                    left = bounds['l'];
                 }
+                if(bounds['r'] > width){
+                    right = width;
+                }else{
+                    right = bounds['r'];
+                }
+                if(bounds['t'] < 0){
+                    top = 0;
+                }else{
+                    top = bounds['t'];
+                }
+                if(bounds['b'] > height){
+                    bottom = height;
+                }else{
+                    bottom = bounds['b'];
+                }    
 
                 left = Math.round(left);
                 right = Math.round(right);
